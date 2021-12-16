@@ -1,63 +1,63 @@
-import React, {useState} from 'react';
+import React, {useState} from 'react'
 import styled from 'styled-components';
 import AddUser from './components/AddUser';
-import ListUsers from './components/ListUsers';
+import ListUser from './components/ListUser';
 import { columnIt } from './globalStyle';
 import Button from './UI/Button';
 import Card from './UI/Card';
 
-const Container = styled.div`
-width: 100vw;
+const MainContainer = styled.div`
 height: 100vh;
+width: 100vw;
 background-color: #1d1d1d;
 ${columnIt};
+justify-content: center;
 align-items: center;
+overflow: hidden;
 `;
 
 const DUMMY_DATA = [
   {
-    id: '001',
-    name: 'Erykah',
-    age: '41'
+    name: 'Mikaela',
+    age: '37',
+    id: '001'
   },
   {
-    id: '002',
-    name: 'Taylor',
-    age: '28'
+    name: 'Danielle',
+    age: '35',
+    id: '002'
   },
-]
-
+] 
 
 const App = () => {
-  const [datas, setDatas] = useState(DUMMY_DATA);
-  const [showForm, setShowForm] = useState(false)
+  const [showData, setShowData] = useState(DUMMY_DATA);
+  const [showForm, setShowForm] = useState(false);
 
-  const showDataHandler = (newDatas) => {
-    setDatas( (prevDatas) => {
-      return[newDatas, ...prevDatas]
-    } )
+  const listNewData = (newDatas) => {
+    setShowData( (prevData) => {
+      return[newDatas, ...prevData];
+    })
   }
 
-  const toggleForm = (ev) => {
-    setShowForm(!showForm);
+  const toggleForm = () => {
+    setShowForm(!showForm)
   }
 
+  
   return (
-  <Container>
-    {!showForm && (
-      <Button onClick={toggleForm}>Add User</Button>
-    )}
-    {showForm && (
+    <MainContainer>
       <Card>
-      <AddUser onCloseForm={toggleForm} onNewDatas={showDataHandler} />
-    </Card>
-    )}
-    
-    <Card>
-      <ListUsers datas={datas}/>
-    </Card>
-  </Container>
+        {!showForm && (
+          <Button onClick={toggleForm}>Add User</Button>
+        )}
+        {showForm && <AddUser onNewDatas={listNewData} onCloseForm={toggleForm}/>}
+        
+      </Card>
+      <Card>
+        <ListUser datas={showData} />
+      </Card>
+    </MainContainer>
   )
-};
+}
 
-export default App;
+export default App

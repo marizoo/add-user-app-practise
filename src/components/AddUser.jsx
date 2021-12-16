@@ -1,116 +1,111 @@
-import React, {useState, useRef} from 'react'
+import React, {useState} from 'react'
 import styled from 'styled-components';
 import { centerIt, columnIt } from '../globalStyle';
 import Button from '../UI/Button';
+import Card from '../UI/Card';
 import { ErrorModal } from '../UI/ErrorModal';
 
-const Container = styled.div`
-width: 90%;
+const Form = styled.form`
+width: 80%;
+padding: 20px 0;
 ${columnIt};
 `;
-
-const Form = styled.form`
-width: 100%;
-${columnIt};
-`
 
 const Label = styled.label`
 font-size: 18px;
 font-weight: 500px;
 margin-bottom: 5px;
-`
+`;
 
 const Input = styled.input`
 font-size: 18px;
 font-weight: 300px;
-margin-bottom: 15px;
-border: 1px solid rgba(0, 0, 0, 0.7);
-border-radius: 10px;
-width: 100%;
-height: 35px;
+display: flex;
+align-items: center;
 padding-left: 10px;
+margin-bottom: 15px;
 `
 
 const ButtonContainer = styled.div`
-${centerIt}
+display: flex;
 width: 100%;
+${centerIt};
 `
 
 
-const AddUser = ({onNewDatas, onCloseForm}) => {
-    
-    const nameInputRef = useRef();
-    const  ageInputRef = useRef();
+
+const AddUser = ({onNewDatas, onCloseForm, title, message, onCloseOverlay}) => {
+
+    const [addName, setAddName] = useState("")
+    const [addAge, setAddAge] = useState("")
     const [errors, setErrors] = useState()
 
+    const addNameHandler = (ev) => {
+        setAddName(ev.target.value)
+    }
+
+    const addAgeHandler = (ev) => {
+        setAddAge(ev.target.value)
+    }
+
+   
+   
+
     const submitHandler = (ev) => {
-        ev.preventDefault();
+        ev.preventDefault()
 
+        if(addName.trim().length === 0 || addAge.trim().length === 0) {
+            setErrors({
+                title: 'oh NO babe..',
+                message: 'please enter valid username.'
+            })
+            return;
+        }
     
-
-    const addedName = nameInputRef.current.value;
-    const addedAge = ageInputRef.current.value;
-
-    if(addedName.trim().length === 0 || addedAge.trim().length === 0 ){
-        setErrors({
-            title: "Oh No.....",
-            message: "Please enter valid username"
-        })
-        return;
-    }
-
-    if(+addedAge < 0 || +addedAge > 100) {
-        setErrors({
-            title: "Oh Nooo...",
-            message: "Please enter valid age"
-        })
-        return;
-    }
-
-        const newDatas = {
-            name: addedName,
-            age: addedAge,
-            id : Math.floor(Math.random() * 1000)
+        if(+addAge < 1 || +addAge > 100){
+            setErrors({
+                title: 'oh No again..',
+                message: 'please enter valid number (from 1 - 100).'
+            })
+            return;
         }
 
-    onNewDatas(newDatas);
-    nameInputRef.current.value = "";
-    ageInputRef.current.value = "";
-    onCloseForm(ev);
-    }
+        const newDatas = {
+            name: addName,
+            age: addAge,
+            id: Math.floor(Math.random() * 1000)
+        }
 
-    const closeForm = (ev) => {
+        onNewDatas(newDatas);
+        setAddName("");
+        setAddAge("");
         onCloseForm(ev);
     }
 
-    const handleError = () =>{
-        setErrors(null);
+    const closeForm = (ev) =>{
+        onCloseForm(ev)
     }
-    
-    return (
-        <Container>
-            {errors && (
-                <ErrorModal 
-                    onCloseError={handleError}
-                    title={errors.title}
-                    message={errors.message}
-                    />
-            )}
-            
 
-        <Form onSubmit={submitHandler}>
-            <Label htmlFor='username'>Username:</Label>
-            <Input id="username" ref={nameInputRef} placeholder="username"/>
-            <Label htmlFor='age'>Age:</Label>
-            <Input id="age" ref={ageInputRef} placeholder="age"/>
-            <ButtonContainer>
-                <Button type="submit">Add User</Button>
-                <Button onClick={closeForm}>Cancel</Button>
-            </ButtonContainer>
-        </Form>
-            
-           
-        </Container>
+    const closeOverlay = () => {
+        setErrors(null)
+    }
+
+    return (
+        <Card>
+            {errors && (
+                <ErrorModal onCloseOverlay={closeOverlay} title={errors.title} message={errors.message}/>
+            )}
+            <Form onSubmit={submitHandler}>
+                <Label htmlFor='username'>Username:</Label>
+                <Input id='username' placeholder='username' type='text' onChange={addNameHandler} value={addName}/>
+                <Label htmlFor='age'>Age:</Label>
+                <Input id='age' placeholder='age' type='number' onChange={addAgeHandler} value={addAge}/>
+                <ButtonContainer>
+                    <Button type="submit">Add User</Button>
+                    <Button onClick={closeForm}>Cancel</Button>
+                </ButtonContainer>   
+            </Form>
+        </Card>
     )
 }
 
